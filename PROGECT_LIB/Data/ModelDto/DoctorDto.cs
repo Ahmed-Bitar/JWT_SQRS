@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PROGECT_LIB.Data.ModelDto
 {
-    public class ClientDto
+    public class DoctorDto
     {
         public string FullName { get; set; }
         public string Email { get; set; }

@@ -8,7 +8,7 @@ using PROGECT_LIB.Data.Model;
 
 namespace PROGECT_LIB.CQRS.ClintCommand
 {
-    public record UpdateClientCommand(Client Client) : IRequest<Client>;
+    public record UpdateClientCommand(Doctor Client) : IRequest<Doctor>;
    
 }
     

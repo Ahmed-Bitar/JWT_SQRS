@@ -8,6 +8,6 @@ using PROGECT_LIB.Data.Model;
 
 namespace PROGECT_LIB.CQRS.ClintCommand
 {
-    public record InsertClientCommand(Client Client) : IRequest<Client>;
+    public record InsertClientCommand(Doctor Client) : IRequest<Doctor>;
   
 }

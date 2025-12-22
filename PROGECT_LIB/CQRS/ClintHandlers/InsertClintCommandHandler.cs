@@ -10,15 +10,15 @@ using PROGECT_LIB.Repo;
 
 namespace PROGECT_LIB.CQRS.ClintHandlers
 {
-    public record InsertClintCommandHandler : IRequestHandler<InsertClientCommand, Client>
+    public record InsertClintCommandHandler : IRequestHandler<InsertClientCommand, Doctor>
     {
-        public IBaseRepo<Client> _baseRepo { get; }
+        public IBaseRepo<Doctor> _baseRepo { get; }
 
-        public InsertClintCommandHandler(IBaseRepo<Client> _baseRepo)
+        public InsertClintCommandHandler(IBaseRepo<Doctor> _baseRepo)
         {
             this._baseRepo = _baseRepo;
         }
-        public async Task<Client> Handle(InsertClientCommand request, CancellationToken cancellationToken)
+        public async Task<Doctor> Handle(InsertClientCommand request, CancellationToken cancellationToken)
         {
             await _baseRepo.InsertItem(request.Client);
             return await Task.FromResult(request.Client);

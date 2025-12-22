@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using PROGECT_LIB.Data;
+using PROGECT_LIB.Data.DbContext;
 using PROGECT_LIB.Data.Model;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -26,16 +26,17 @@ public class AuthController : ControllerBase
         _context = context;
     }
 
-    [HttpPost("loginn")]
+    [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
+        
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null)
-            return Unauthorized("Invalid email ");
+            return Unauthorized($"Invalid email {user }");
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
         if (!result.Succeeded)
-            return Unauthorized("Invalid password");
+            return Unauthorized("Invalid  password");
 
         var accessToken = GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();

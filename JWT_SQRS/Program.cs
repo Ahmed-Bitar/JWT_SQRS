@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PROGECT_LIB.Data;
+using PROGECT_LIB.Data.DbContext;
 using PROGECT_LIB.Data.Model;
 using System.Text;
 

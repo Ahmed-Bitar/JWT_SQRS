@@ -11,17 +11,17 @@ using PROGECT_LIB.Repo;
 
 namespace PROGECT_LIB.CQRS.ClintHandlers
 {
-    public class UpdateClintCommandHandler : IRequestHandler<UpdateClientCommand, Client>
+    public class UpdateClintCommandHandler : IRequestHandler<UpdateClientCommand, Doctor>
     {
-        private readonly IBaseRepo<Client> _repo;
+        private readonly IBaseRepo<Doctor> _repo;
 
-        public UpdateClintCommandHandler(IBaseRepo<Client> repo)
+        public UpdateClintCommandHandler(IBaseRepo<Doctor> repo)
         {
             _repo = repo;
         }
 
 
-        public async Task<Client> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
+        public async Task<Doctor> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
         {
             var updatedBook = await _repo.UpdateItem(request.Client);
             return updatedBook;

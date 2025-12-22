@@ -8,7 +8,7 @@ using PROGECT_LIB.Data.Model;
 
 namespace PROGECT_LIB.CQRS.ClintQueries
 {
-    public record  GettAlClintsQueries : IRequest<List<Client>>
+    public record  GettAlClintsQueries : IRequest<List<Doctor>>
     {
     }
 }

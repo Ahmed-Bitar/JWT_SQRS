@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using PROGECT_LIB.Data;
+using PROGECT_LIB.Data.DbContext;
 using PROGECT_LIB.Data.Model;
 using PROGECT_LIB.Repo;
 using System;
@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace JWT_SQRS.Controllers
 {
+    [Authorize(Roles = "Manager")]
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController<T> : ControllerBase where T : class, IEntity
@@ -98,7 +99,7 @@ namespace JWT_SQRS.Controllers
 
             string roleName = "Clint";
 
-            var clinte = new Client
+            var clinte = new Doctor
             {
                 FullName = model.Name,
                 Address = model.Adres,

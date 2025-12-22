@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PROGECT_LIB.Data;
+using PROGECT_LIB.Data.DbContext;
 
 #nullable disable
 
 namespace PROGECT_LIB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251221163526_an")]
-    partial class an
+    [Migration("20251223103653_aa")]
+    partial class aa
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -179,7 +179,6 @@ namespace PROGECT_LIB.Migrations
                         .HasColumnType("nvarchar(21)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -215,7 +214,6 @@ namespace PROGECT_LIB.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -267,7 +265,7 @@ namespace PROGECT_LIB.Migrations
                     b.Property<DateTime>("RefreshTokenExpiryTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -346,9 +344,7 @@ namespace PROGECT_LIB.Migrations
                 {
                     b.HasOne("PROGECT_LIB.Data.Model.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });

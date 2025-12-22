@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using PROGECT_LIB.Data.Model;
 
 
-namespace PROGECT_LIB.Data
+namespace PROGECT_LIB.Data.DbContext
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
@@ -16,8 +16,13 @@ namespace PROGECT_LIB.Data
         }
         public DbSet<UserToken> UserTokens { get; set; }
 
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<N> MedicalRecords { get; set; }
+        public DbSet<Prescription> Prescriptions { get; set; }
+
+        public DbSet<Patient> patients { get; set; }
         public DbSet<ApplicationUser> Users { get; set; }
-        public DbSet<Client> Clients { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,7 +45,7 @@ namespace PROGECT_LIB.Data
                 await roleManager.CreateAsync(role);
             }
 
-            var user = await userManager.FindByEmailAsync("ahmad.bitar@gmail.com");
+            var user = await userManager.FindByEmailAsync("ahmad.w.bitar@gmail.com");
             if (user == null)
             {
                 user = new ApplicationUser
@@ -51,6 +56,7 @@ namespace PROGECT_LIB.Data
                     Email = "ahmad.w.bitar@gmail.com",
                     PhoneNumber = "123456789",
                     UserType = roleName,
+
                 };
 
                 string password = "Ahmad@ab12";

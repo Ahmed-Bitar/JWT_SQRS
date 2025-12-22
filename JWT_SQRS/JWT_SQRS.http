@@ -1,0 +1,6 @@
+@JWT_SQRS_HostAddress = http://localhost:5129
+
+GET {{JWT_SQRS_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

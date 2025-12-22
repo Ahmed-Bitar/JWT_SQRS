@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JWT_SQRS", "JWT_SQRS\JWT_SQRS.csproj", "{86CC78D9-DF8D-4036-9353-71FDB5E9CA37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PROGECT_LIB", "PROGECT_LIB\PROGECT_LIB.csproj", "{F8040733-6976-4DCD-B178-60D517328BF0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{86CC78D9-DF8D-4036-9353-71FDB5E9CA37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86CC78D9-DF8D-4036-9353-71FDB5E9CA37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86CC78D9-DF8D-4036-9353-71FDB5E9CA37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86CC78D9-DF8D-4036-9353-71FDB5E9CA37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8040733-6976-4DCD-B178-60D517328BF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8040733-6976-4DCD-B178-60D517328BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8040733-6976-4DCD-B178-60D517328BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8040733-6976-4DCD-B178-60D517328BF0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B7C699C4-C4EF-4652-9C82-EDF623EE219B}
+	EndGlobalSection
+EndGlobal

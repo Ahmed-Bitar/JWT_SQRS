@@ -1,4 +1,6 @@
-﻿namespace PROGECT_LIB.Data.ModelDto
+﻿using PROGECT_LIB.Data.Model;
+
+namespace PROGECT_LIB.Data.ModelDto
 {
     public class AppointmentDto
     {

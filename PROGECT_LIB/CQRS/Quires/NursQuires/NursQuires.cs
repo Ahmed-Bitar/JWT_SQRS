@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using MediatR;
 using PROGECT_LIB.Data.Model;
 
-namespace PROGECT_LIB.CQRS.ClintCommand
+namespace PROGECT_LIB.CQRS.Quires.NursQuires
 {
-    public record UpdateClientCommand(Doctor Client) : IRequest<Doctor>;
-   
+    public class GetAllNurseQuires : IRequest<List<Doctor>>;
+
 }
-    
-    

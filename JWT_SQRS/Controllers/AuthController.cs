@@ -18,7 +18,11 @@ public class AuthController : ControllerBase
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly AppDbContext _context;
 
-    public AuthController(IConfiguration config, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, AppDbContext context)
+    public AuthController(
+        IConfiguration config,
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        AppDbContext context)
     {
         _config = config;
         _userManager = userManager;
@@ -29,20 +33,21 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
-        
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null)
-            return Unauthorized($"Invalid email {user }");
+            return Unauthorized("Invalid email");
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
         if (!result.Succeeded)
-            return Unauthorized("Invalid  password");
+            return Unauthorized("Invalid password");
 
-        var accessToken = GenerateJwtToken(user);
+        var accessToken = await GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
         var refreshExpiry = DateTime.UtcNow.AddDays(7);
 
-        var userToken = await _context.UserTokens.FirstOrDefaultAsync(t => t.UserId == user.Id);
+        var userToken = await _context.UserTokens
+            .FirstOrDefaultAsync(t => t.UserId == user.Id);
+
         if (userToken != null)
         {
             userToken.RefreshToken = refreshToken;
@@ -72,7 +77,9 @@ public class AuthController : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshRequestModel model)
     {
-        var userToken = await _context.UserTokens.FirstOrDefaultAsync(t => t.RefreshToken == model.RefreshToken);
+        var userToken = await _context.UserTokens
+            .FirstOrDefaultAsync(t => t.RefreshToken == model.RefreshToken);
+
         if (userToken == null || userToken.RefreshTokenExpiryTime <= DateTime.UtcNow)
             return Unauthorized("Invalid or expired refresh token");
 
@@ -80,12 +87,12 @@ public class AuthController : ControllerBase
         if (user == null)
             return Unauthorized("User not found");
 
-        var newAccessToken = GenerateJwtToken(user);
+        var newAccessToken = await GenerateJwtToken(user);
         var newRefreshToken = GenerateRefreshToken();
-        var newRefreshExpiry = DateTime.UtcNow.AddDays(7);
 
         userToken.RefreshToken = newRefreshToken;
-        userToken.RefreshTokenExpiryTime = newRefreshExpiry;
+        userToken.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
         _context.UserTokens.Update(userToken);
         await _context.SaveChangesAsync();
 
@@ -96,12 +103,17 @@ public class AuthController : ControllerBase
         });
     }
 
-    private string GenerateJwtToken(ApplicationUser user)
+    private async Task<string> GenerateJwtToken(ApplicationUser user)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+        );
 
-        var claims = new[]
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
@@ -109,12 +121,17 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
         var token = new JwtSecurityToken(
             issuer: _config["Jwt:Issuer"],
             audience: _config["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddHours(1),
-            signingCredentials: credentials
+            expires: DateTime.UtcNow.AddMinutes(15),  
+            signingCredentials: creds
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);

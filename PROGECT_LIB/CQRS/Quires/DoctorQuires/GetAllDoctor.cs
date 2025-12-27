@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using MediatR;
 using PROGECT_LIB.Data.Model;
 
-namespace PROGECT_LIB.CQRS.ClintCommand
+namespace PROGECT_LIB.CQRS.Quires.DoctorQuires
 {
-    public class DeleteClientCommand : IRequest<Doctor>
-    {
-        public int Id { get; set; }
-    }
+    public class GetAllDoctorQuires : IRequest<List<Doctor>>;
+    
 }

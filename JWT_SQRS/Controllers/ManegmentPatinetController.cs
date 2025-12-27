@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PROGECT_LIB.Data.Model;
+using PROGECT_LIB.Data.ModelDto;
+using PROGECT_LIB.Data.DbContext;
+using System.Net.Mail;
 
 namespace JWT_SQRS.Controllers
 {
-    public class ManegmentPatinetController : Controller
+    [ApiController]
+    [Route("api/account")]
+    public class AccountApiController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+       
     }
 }

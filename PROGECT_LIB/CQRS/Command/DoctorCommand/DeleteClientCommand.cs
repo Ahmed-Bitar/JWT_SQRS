@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using MediatR;
 using PROGECT_LIB.Data.Model;
 
-namespace PROGECT_LIB.CQRS.ClintCommand
+namespace PROGECT_LIB.CQRS.Command.DoctorCommand
 {
-    public record InsertClientCommand(Doctor Client) : IRequest<Doctor>;
-  
+    public class DeleteClientCommand : IRequest<Doctor>
+    {
+        public int Id { get; set; }
+    }
 }

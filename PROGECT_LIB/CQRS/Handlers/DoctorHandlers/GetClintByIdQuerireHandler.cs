@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PROGECT_LIB.CQRS.ClintQueries;
+using PROGECT_LIB.CQRS.Quires.DoctorQuires;
 using PROGECT_LIB.Data.DbContext;
 using PROGECT_LIB.Data.Model;
 
-namespace PROGECT_LIB.CQRS.ClintHandlers
+namespace PROGECT_LIB.CQRS.Handlers.DoctorHandlers
 {
-    public record GetClintByIdQuerireHandler : IRequestHandler<GetClintByIdQuerire, Doctor>
+    public record GetClintByIdQuerireHandler : IRequestHandler<GetDoctorByIdQuerire, Doctor>
     {
         private readonly AppDbContext _context;
 
@@ -19,7 +19,7 @@ namespace PROGECT_LIB.CQRS.ClintHandlers
         {
             _context = context;
         }
-        public async Task<Doctor> Handle(GetClintByIdQuerire request, CancellationToken cancellationToken)
+        public async Task<Doctor> Handle(GetDoctorByIdQuerire request, CancellationToken cancellationToken)
         {
             var book = await _context.Doctors.Where(b => b.Id == request.Id).FirstOrDefaultAsync(cancellationToken);
             return book;

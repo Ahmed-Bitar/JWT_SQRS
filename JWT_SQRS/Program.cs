@@ -42,14 +42,36 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime = true,
+        ValidateLifetime = false, // اجعلها true في الإنتاج
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine("Authentication failed: " + context.Exception.Message);
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine("Token validated for " + context.Principal.Identity?.Name);
+            return Task.CompletedTask;
+        }
+    };
 });
+#endregion
+
+#region 🧠 Memory Cache
+builder.Services.AddMemoryCache();
+#endregion
+
+#region ✉️ Scoped Services
+builder.Services.AddScoped<EmailVerificationService>();
 #endregion
 
 #region 🌐 CORS
@@ -68,7 +90,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 #endregion
 
-#region 📘 Swagger
+#region 📘 Swagger + JWT Support
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -79,7 +101,7 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Authorization: Bearer {token}",
+        Description = "Enter JWT Bearer token **_only_**",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
@@ -91,11 +113,7 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             new List<string>()
         }
@@ -105,39 +123,31 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-#region 🌱 Seed
+#region 🌱 Seed Roles and Users
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
-    var context = services.GetRequiredService<AppDbContext>();
-
-    await context.SeedManagerRoleAndUser(roleManager, userManager);
+    var seeder = new DbSeeder();
+    await seeder.SeedRolesAndUsers(roleManager, userManager);
 }
 #endregion
 
 #region 🚀 Middleware
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth API V1");
-    });
-}
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth API V1");
-        c.RoutePrefix = string.Empty; // يجعل Swagger الصفحة الرئيسية
+        c.RoutePrefix = string.Empty; // Swagger الصفحة الرئيسية
     });
 
     try
     {
-        var url = "https://localhost:7099"; // غيّر البورت إذا مختلف
+        var url = "https://localhost:7099"; // عدّل البورت إذا مختلف
         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
         {
             FileName = url,
@@ -146,16 +156,18 @@ if (app.Environment.IsDevelopment())
     }
     catch
     {
-        // تجاهل أي خطأ
+        // تجاهل أي خطأ في فتح المتصفح
     }
 }
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 #endregion
 
 app.Run();

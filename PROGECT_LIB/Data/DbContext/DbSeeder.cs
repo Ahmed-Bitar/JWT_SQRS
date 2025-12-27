@@ -1,5 +1,4 @@
-﻿using MedicalPark.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using PROGECT_LIB.Data.Model;
 
 namespace PROGECT_LIB.Data.DbContext
@@ -10,38 +9,42 @@ namespace PROGECT_LIB.Data.DbContext
         {
             await SeedManagerRoleAndUser(roleManager, userManager);
             await DoctorRole(roleManager, userManager);
-            await AdminRole(roleManager, userManager);
             await NurseRole(roleManager, userManager);
         }
-
         public async Task SeedManagerRoleAndUser(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         {
-            var role = await roleManager.FindByNameAsync("Hospital Manager");
+            string roleName = "Hospital Manager";
+
+            var role = await roleManager.FindByNameAsync(roleName);
             if (role == null)
             {
-                role = new ApplicationRole("Hospital Manager");
+                role = new ApplicationRole(roleName);
                 await roleManager.CreateAsync(role);
             }
 
             var user = await userManager.FindByEmailAsync("ahmad.w.bitar@gmail.com");
             if (user == null)
             {
-                user = new Admin
+                user = new ApplicationUser
                 {
                     UserName = "ahmadbitar",
                     Gender = "Male",
-                    Name = "Ahmad Bitar",
+                    FullName = "Ahmad Bitar",
                     Email = "ahmad.w.bitar@gmail.com",
                     PhoneNumber = "123456789",
-                    UserType = "Hospital Manager",
+                    UserType = roleName,
+
                 };
-                var result = await userManager.CreateAsync(user, "Ahmad@ab12");
+
+                string password = "Ahmad@ab12";
+                var result = await userManager.CreateAsync(user, password);
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(user, "Hospital Manager");
+                    await userManager.AddToRoleAsync(user, roleName);
                 }
             }
         }
+       
 
         public async Task DoctorRole(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         {
@@ -56,7 +59,7 @@ namespace PROGECT_LIB.Data.DbContext
                 {
                     UserName = "Doctor",
                     Gender = "Male",
-                    Name = "Doctor",
+                    FullName = "Doctor",
                     Email = "Doctor@gmail.com",
                     PhoneNumber = "123456789",
                     UserType = "Doctor"
@@ -67,29 +70,7 @@ namespace PROGECT_LIB.Data.DbContext
             }
         }
 
-        public async Task AdminRole(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
-        {
-            var role = await roleManager.FindByNameAsync("Admin");
-            if (role == null)
-                await roleManager.CreateAsync(new ApplicationRole("Admin"));
-
-            var user = await userManager.FindByEmailAsync("Admin@gmail.com");
-            if (user == null)
-            {
-                var admin = new Admin
-                {
-                    UserName = "Admin",
-                    Gender = "Male",
-                    Name = "Admin",
-                    Email = "Admin@gmail.com",
-                    PhoneNumber = "123456789",
-                    UserType = "Admin"
-                };
-                var result = await userManager.CreateAsync(admin, "Ahmad@ab12");
-                if (result.Succeeded)
-                    await userManager.AddToRoleAsync(admin, "Admin");
-            }
-        }
+      
 
         public async Task NurseRole(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         {
@@ -104,7 +85,7 @@ namespace PROGECT_LIB.Data.DbContext
                 {
                     UserName = "Nurse",
                     Gender = "Male",
-                    Name = "Nurse",
+                    FullName = "Nurse",
                     Email = "Nurse@gmail.com",
                     PhoneNumber = "123456789",
                     UserType = "Nurse"

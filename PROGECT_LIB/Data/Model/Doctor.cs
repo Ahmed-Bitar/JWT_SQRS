@@ -39,9 +39,9 @@ namespace PROGECT_LIB.Data.Model
         public string ConditionJoind { get; set; }
         public DateTimeOffset JoindedTime { get; set; }
         public List<Patient> Patients { get; set; } = [];
-    /*    public List<Appointment> Appointments { get; set; } = [];
-        public List<MedicalRecord> MedicalRecords { get; set; } = [];
-        public List<Prescription> Prescriptions { get; set; } = [];*/
+        public List<Appointment> Appointments { get; set; } = [];
+       // public List<MedicalRecord> MedicalRecords { get; set; } = [];
+        public List<Prescription> Prescriptions { get; set; } = [];
 
     }
 }

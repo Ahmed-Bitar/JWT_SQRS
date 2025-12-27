@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PROGECT_LIB.CQRS.ClintCommand;
+using PROGECT_LIB.CQRS.Command.DoctorCommand;
 using PROGECT_LIB.Data.DbContext;
 using PROGECT_LIB.Data.Model;
 
-namespace PROGECT_LIB.CQRS.ClintHandlers
+namespace PROGECT_LIB.CQRS.Handlers.DoctorHandlers
 {
     public class DeleteClintCommandHandler: IRequestHandler<DeleteClientCommand, Doctor>
     {

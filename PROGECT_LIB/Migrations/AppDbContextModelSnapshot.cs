@@ -22,6 +22,21 @@ namespace PROGECT_LIB.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DoctorPatient", b =>
+                {
+                    b.Property<int>("DoctorsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DoctorsId", "PatientsId");
+
+                    b.HasIndex("PatientsId");
+
+                    b.ToTable("DoctorPatient");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -247,6 +262,98 @@ namespace PROGECT_LIB.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Appointment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ClosedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DoctorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PatientName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Rendezvous")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Sickness")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Prescription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DoctorID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DoctorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MedicalsName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PatientID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PatientName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sickness")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
+
+                    b.HasIndex("DoctorID");
+
+                    b.HasIndex("PatientID");
+
+                    b.ToTable("Prescriptions");
+                });
+
             modelBuilder.Entity("PROGECT_LIB.Data.Model.UserToken", b =>
                 {
                     b.Property<int>("Id")
@@ -272,18 +379,80 @@ namespace PROGECT_LIB.Migrations
                     b.ToTable("UserTokens");
                 });
 
-            modelBuilder.Entity("PROGECT_LIB.Data.Model.Client", b =>
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Doctor", b =>
                 {
                     b.HasBaseType("PROGECT_LIB.Data.Model.ApplicationUser");
 
-                    b.Property<string>("Address")
+                    b.Property<string>("ConditionJoind")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("JoindedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("PatientID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Salery")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Specialty")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("Doctor");
+                });
+
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Nurse", b =>
+                {
+                    b.HasBaseType("PROGECT_LIB.Data.Model.ApplicationUser");
+
+                    b.Property<int>("Salary")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("Nurse");
+                });
+
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Patient", b =>
+                {
+                    b.HasBaseType("PROGECT_LIB.Data.Model.ApplicationUser");
+
+                    b.Property<string>("Adres")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.HasDiscriminator().HasValue("Client");
+                    b.Property<int>("BloodType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DiseaseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HistoryOfIllness")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MedicalCondition")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("Patient");
+                });
+
+            modelBuilder.Entity("DoctorPatient", b =>
+                {
+                    b.HasOne("PROGECT_LIB.Data.Model.Doctor", null)
+                        .WithMany()
+                        .HasForeignKey("DoctorsId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("PROGECT_LIB.Data.Model.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -337,6 +506,52 @@ namespace PROGECT_LIB.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Appointment", b =>
+                {
+                    b.HasOne("PROGECT_LIB.Data.Model.Doctor", "Doctor")
+                        .WithMany("Appointments")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PROGECT_LIB.Data.Model.Patient", "Patient")
+                        .WithMany("Appointments")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Prescription", b =>
+                {
+                    b.HasOne("PROGECT_LIB.Data.Model.Appointment", "Appointment")
+                        .WithOne("Prescription")
+                        .HasForeignKey("PROGECT_LIB.Data.Model.Prescription", "AppointmentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PROGECT_LIB.Data.Model.Doctor", "Doctor")
+                        .WithMany("Prescriptions")
+                        .HasForeignKey("DoctorID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PROGECT_LIB.Data.Model.Patient", "Patient")
+                        .WithMany("Prescriptions")
+                        .HasForeignKey("PatientID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("PROGECT_LIB.Data.Model.UserToken", b =>
                 {
                     b.HasOne("PROGECT_LIB.Data.Model.ApplicationUser", "User")
@@ -344,6 +559,26 @@ namespace PROGECT_LIB.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Appointment", b =>
+                {
+                    b.Navigation("Prescription")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Doctor", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("Prescriptions");
+                });
+
+            modelBuilder.Entity("PROGECT_LIB.Data.Model.Patient", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("Prescriptions");
                 });
 #pragma warning restore 612, 618
         }

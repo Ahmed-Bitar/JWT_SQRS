@@ -1,83 +1,88 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PROGECT_LIB.Data.Model;
-
 
 namespace PROGECT_LIB.Data.DbContext
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
         {
         }
-        public DbSet<UserToken> UserTokens { get; set; }
 
+        public DbSet<UserToken> UserTokens { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
-        public DbSet<N> MedicalRecords { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }
 
-        public DbSet<Patient> patients { get; set; }
-        public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Patient> Patients { get; set; }
+        public DbSet<Nurse> Nurses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ApplicationUser>().HasQueryFilter(u => !u.IsDeleted);
+            base.OnModelCreating(modelBuilder);
 
+            // ================== Soft Delete ==================
+            modelBuilder.Entity<ApplicationUser>()
+                .HasQueryFilter(u => !u.IsDeleted);
 
+            // ================== Appointment ==================
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Doctor)
+                .WithMany(d => d.Appointments)
+                .HasForeignKey(a => a.DoctorId)
+                .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Patient)
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(a => a.PatientId)
+                .OnDelete(DeleteBehavior.NoAction);
 
+            // ================== Prescription ==================
+            modelBuilder.Entity<Prescription>()
+                .HasOne(p => p.Doctor)
+                .WithMany(d => d.Prescriptions)
+                .HasForeignKey(p => p.DoctorID)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            base.OnModelCreating(modelBuilder); 
-        }
-        public async Task SeedManagerRoleAndUser(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
-        {
-            string roleName = "Manager";
+            modelBuilder.Entity<Prescription>()
+                .HasOne(p => p.Patient)
+                .WithMany(pat => pat.Prescriptions)
+                .HasForeignKey(p => p.PatientID)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            var role = await roleManager.FindByNameAsync(roleName);
-            if (role == null)
-            {
-                role = new ApplicationRole(roleName);
-                await roleManager.CreateAsync(role);
-            }
-
-            var user = await userManager.FindByEmailAsync("ahmad.w.bitar@gmail.com");
-            if (user == null)
-            {
-                user = new ApplicationUser
-                {
-                    UserName = "ahmadbitar",
-                    Gender = "Male",
-                    FullName = "Ahmad Bitar",
-                    Email = "ahmad.w.bitar@gmail.com",
-                    PhoneNumber = "123456789",
-                    UserType = roleName,
-
-                };
-
-                string password = "Ahmad@ab12";
-                var result = await userManager.CreateAsync(user, password);
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(user, roleName);
-                }
-            }
+            modelBuilder.Entity<Prescription>()
+                .HasOne(p => p.Appointment)
+                .WithOne(a => a.Prescription)
+                .HasForeignKey<Prescription>(p => p.AppointmentId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
-
+        // ================== Soft Delete Logic ==================
         public override int SaveChanges()
         {
-            foreach (var entry in ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Deleted && e.Entity is ApplicationUser))
-            {
-                entry.State = EntityState.Modified;
-                entry.CurrentValues["IsDeleted"] = true;
-            }
+            ApplySoftDelete();
             return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ApplySoftDelete();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void ApplySoftDelete()
+        {
+            foreach (var entry in ChangeTracker.Entries<ApplicationUser>())
+            {
+                if (entry.State == EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.Entity.IsDeleted = true;
+                }
+            }
         }
     }
 }

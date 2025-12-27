@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
-using PROGECT_LIB.CQRS.ClintCommand;
+using PROGECT_LIB.CQRS.Command.DoctorCommand;
 using PROGECT_LIB.Data.Model;
 using PROGECT_LIB.Repo;
 
-namespace PROGECT_LIB.CQRS.ClintHandlers
+namespace PROGECT_LIB.CQRS.Handlers.DoctorHandlers
 {
     public class UpdateClintCommandHandler : IRequestHandler<UpdateClientCommand, Doctor>
     {
